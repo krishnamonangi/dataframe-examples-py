@@ -55,13 +55,14 @@ if __name__ == '__main__':
 
     # Applying transformation on dataframe using DSL (Domain Specific Language)
     txn_fct_df = txn_fct_df \
+        .withColumn("created_time_ist_raw", unix_timestamp(txn_fct_df["created_time_ist"], "yyyy-MM-dd HH:mm:ss")) \
         .withColumn("created_time_ist", unix_timestamp(txn_fct_df["created_time_ist"], "yyyy-MM-dd HH:mm:ss").cast(TimestampType()))
 
     txn_fct_df.printSchema()
     txn_fct_df.show(5, False)
 
-    print("# of records = " + str(txn_fct_df.count()))
-    print("# of merchants = " + str(txn_fct_df.select(txn_fct_df["merchant_id"]).distinct().count()))
+    print("# of records = ", txn_fct_df.count())
+    print("# of merchants = ", txn_fct_df.select(txn_fct_df["merchant_id"]).distinct().count())
 
     txnAggDf = txn_fct_df \
         .repartition(10, txn_fct_df["merchant_id"]) \
